@@ -98,6 +98,13 @@ class StormpathSettings(collections.MutableMapping):
         node, child = self.__keytransform__(key)
         del node[child]
 
+    def __contains__(self, key):
+        try:
+            self.__nodematch__(key)
+            return True
+        except KeyError:
+            return False
+
     def __iter__(self):
         return iter(self.store)
 
