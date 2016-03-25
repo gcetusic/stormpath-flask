@@ -271,6 +271,32 @@ class TestCheckSettings(StormpathTestCase):
         self.app.config['STORMPATH_COOKIE_DURATION'] = timedelta(minutes=1)
         check_settings(self.app.config)
 
+    def test_verify_email_autologin(self):
+        # stormpath.web.register.autoLogin is true, but the default account
+        # store of the specified application has the email verification
+        # workflow enabled. Auto login is only possible if email verification
+        # is disabled
+        self.app.config['stormpath']['verifyEmail']['enabled'] = True
+        self.app.config['stormpath']['register']['autoLogin'] = True
+        self.assertRaises(ConfigurationError, check_settings, self.app.config)
+
+        # Now that we've configured things properly, it should work.
+        self.app.config['stormpath']['register']['autoLogin'] = True
+        check_settings(self.app.config)
+
+    def test_register_default_account_store(self):
+        # stormpath.web.register.autoLogin is true, but the default account
+        # store of the specified application has the email verification
+        # workflow enabled. Auto login is only possible if email verification
+        # is disabled
+        self.app.config['stormpath']['verifyEmail']['enabled'] = True
+        self.app.config['stormpath']['register']['autoLogin'] = True
+        self.assertRaises(ConfigurationError, check_settings, self.app.config)
+
+        # Now that we've configured things properly, it should work.
+        self.app.config['stormpath']['register']['autoLogin'] = True
+        check_settings(self.app.config)
+
     def tearDown(self):
         """Remove our apiKey.properties file."""
         super(TestCheckSettings, self).tearDown()
